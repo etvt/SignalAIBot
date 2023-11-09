@@ -4,6 +4,14 @@
       <settings>
         <option name="imageTag" value="etvt/signalaibot:local" />
         <option name="attachToContainerNeeded" value="true" />
+        <option name="buildArgs">
+          <list>
+            <DockerEnvVarImpl>
+              <option name="name" value="DEVELOPMENT" />
+              <option name="value" value="true" />
+            </DockerEnvVarImpl>
+          </list>
+        </option>
         <option name="buildKitEnabled" value="true" />
         <option name="containerName" value="signalaibot_local_ephemeral" />
         <option name="envVars">

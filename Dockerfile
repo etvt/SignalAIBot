@@ -2,6 +2,8 @@
 
 FROM registry.gitlab.com/signald/signald:latest
 
+ARG DEVELOPMENT=false
+
 # build-time user
 USER root
 
@@ -31,11 +33,20 @@ WORKDIR /app
 # install app dependencies
 COPY ./pyproject.toml /app/pyproject.toml
 RUN poetry config virtualenvs.create false && \
-    poetry install --no-root --no-cache
+    if [ "$DEVELOPMENT" = "true" ] ; then \
+        poetry install --no-root --no-cache --with dev; \
+    else \
+        poetry install --no-root --no-cache; \
+    fi
 
 # install the project
 COPY . /app
-RUN poetry install --no-cache
+RUN if [ "$DEVELOPMENT" = "true" ] ; then \
+        poetry install --no-cache --with dev; \
+    else \
+        poetry install --no-cache; \
+    fi
+
 
 # run-time user
 ARG RUN_AS=signald

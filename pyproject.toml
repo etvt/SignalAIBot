@@ -12,9 +12,12 @@ feedparser = "^6.0.10"
 asks = "^3.0.0"
 beautifulsoup4 = "^4.12.2"
 
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
+watchfiles = "^0.21.0"
 
 [build-system]
 requires = ["poetry-core"]

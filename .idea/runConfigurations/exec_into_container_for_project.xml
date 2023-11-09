@@ -10,6 +10,10 @@
               <option name="name" value="RUN_AS" />
               <option name="value" value="root" />
             </DockerEnvVarImpl>
+            <DockerEnvVarImpl>
+              <option name="name" value="DEVELOPMENT" />
+              <option name="value" value="true" />
+            </DockerEnvVarImpl>
           </list>
         </option>
         <option name="buildKitEnabled" value="true" />

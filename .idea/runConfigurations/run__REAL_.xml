@@ -1,11 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="run [PROD]" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="run [REAL]" type="PythonConfigurationType" factoryName="Python">
     <module name="SignalAIBot" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="false" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
       <env name="SIGNAL_PHONE_NUMBER" value="plsspecify" />
+      <env name="RELOAD_ON_SOURCE_CHANGES" value="true" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="WORKING_DIRECTORY" value="/app" />

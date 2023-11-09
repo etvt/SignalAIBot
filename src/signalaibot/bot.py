@@ -1,3 +1,4 @@
+import logging
 import os
 import random
 import tempfile
@@ -42,7 +43,7 @@ async def apod(ctx: ChatContext) -> None:
         await ctx.message.reply(body=message, attachments=[attachment])
 
 
-async def main():
+async def start_bot():
     async with Bot(os.environ["SIGNAL_PHONE_NUMBER"],
                    socket_path="/signald/signald.sock") as bot:
         # await bot.set_profile("[botee]", profile_about="", profile_avatar=str(Path.cwd() / "resources" / "avatar.jpg"))
@@ -52,6 +53,23 @@ async def main():
         await bot.start()
 
 
-if __name__ == '__main__':
+async def start_with_reloader():
+    from watchfiles import arun_process
+    await arun_process(os.getcwd(), target=start_bot)
+
+
+def main():
     import anyio
-    anyio.run(main)
+
+    if os.environ.get('RELOAD_ON_SOURCE_CHANGES', '').strip().lower() == "true":
+        try:
+            anyio.run(start_with_reloader)
+        except ImportError:
+            logging.error("watchfiles is not installed, cannot start with RELOAD_ON_SOURCE_CHANGES=True")
+            anyio.run(start_bot)
+    else:
+        anyio.run(start_bot)
+
+
+if __name__ == '__main__':
+    main()
