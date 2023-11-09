@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Azure CLI" type="docker-deploy" factoryName="docker-image" server-name="Docker">
+    <deployment type="docker-image">
+      <settings>
+        <option name="imageTag" value="mcr.microsoft.com/azure-cli" />
+        <option name="attachToContainerNeeded" value="true" />
+        <option name="containerName" value="az_cli" />
+        <option name="commandLineOptions" value="-v az_cli:/root/.azure" />
+      </settings>
+    </deployment>
+    <method v="2" />
+  </configuration>
+</component>
