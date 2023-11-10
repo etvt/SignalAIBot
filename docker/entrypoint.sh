@@ -28,7 +28,7 @@ cleanup() {
     # Unregister the traps inside the cleanup to prevent recursive triggering
     trap - EXIT SIGINT SIGTERM
 
-    echo "Exit requested by system. Cleaning up..."
+    echo "Exit requested. Cleaning up..."
     stop_process "$CMD_PID"
     CMD_PID=
     echo "Sleeping for 2 seconds..."
