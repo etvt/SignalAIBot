@@ -2,4 +2,4 @@
 
 cd /app || true
 
-exec python3 -m signalaibot.bot
+exec python3 -m signalaibot.main

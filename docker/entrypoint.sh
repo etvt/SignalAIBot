@@ -25,7 +25,10 @@ stop_process() {
 
 # Function to stop both processes gracefully
 cleanup() {
-    echo "Cleaning up before exit..."
+    # Unregister the traps inside the cleanup to prevent recursive triggering
+    trap - EXIT SIGINT SIGTERM
+
+    echo "Exit requested by system. Cleaning up..."
     stop_process "$CMD_PID"
     CMD_PID=
     echo "Sleeping for 2 seconds..."
@@ -63,10 +66,10 @@ echo "Started CMD (" "$@" ") with PID $CMD_PID"
 # Wait for either process to exit. The trap will handle the cleanup.
 if wait -n $SIGNALD_PID $CMD_PID; then
   EXIT_CODE=$?
-  echo "Received exit code '$EXIT_CODE' from one process. Terminating the container..."
+  echo "Received exit code '$EXIT_CODE' from one process. Exiting..."
 else
   EXIT_CODE=$?
-  echo "Received ERROR code '$EXIT_CODE' from one process. Terminating the container..."
+  echo "Received ERROR code '$EXIT_CODE' from one process. Exiting..."
 fi
 
 # Exit with the code from the process that terminated first

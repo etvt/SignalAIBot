@@ -52,5 +52,5 @@ RUN if [ "$DEVELOPMENT" = "true" ] ; then \
 ARG RUN_AS=signald
 USER ${RUN_AS}
 
-ENTRYPOINT ["/usr/bin/dumb-init", "--", "/usr/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--single-child", "--", "/usr/bin/entrypoint.sh"]
 CMD ["/usr/bin/signalaibot.sh"]

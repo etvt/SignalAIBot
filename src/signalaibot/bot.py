@@ -1,10 +1,13 @@
 import logging
 import os
 import random
+import signal
 import tempfile
 
+import anyio
 import asks
 import feedparser
+from anyio import open_signal_receiver, CancelScope
 from bs4 import BeautifulSoup
 from semaphore import Attachment, Bot, ChatContext
 
@@ -45,31 +48,23 @@ async def apod(ctx: ChatContext) -> None:
 
 async def start_bot():
     async with Bot(os.environ["SIGNAL_PHONE_NUMBER"],
+                   # profile_name="[botee]", profile_picture=str(Path.cwd() / "resources" / "avatar.jpg"),
+                   group_auto_accept=False,
                    socket_path="/signald/signald.sock") as bot:
-        # await bot.set_profile("[botee]", profile_about="", profile_avatar=str(Path.cwd() / "resources" / "avatar.jpg"))
-        bot.register_handler("!ai", ai)
-        bot.register_handler("!apod", apod)
+        async with anyio.create_task_group() as tg:
+            tg.start_soon(interrupt_handler, tg.cancel_scope)
+            logging.info("Starting bot...")
+            bot.register_handler("!ai", ai)
+            bot.register_handler("!apod", apod)
 
-        await bot.start()
-
-
-async def start_with_reloader():
-    from watchfiles import arun_process
-    await arun_process(os.getcwd(), target=start_bot)
+            await bot.start()
 
 
-def main():
-    import anyio
-
-    if os.environ.get('RELOAD_ON_SOURCE_CHANGES', '').strip().lower() == "true":
-        try:
-            anyio.run(start_with_reloader)
-        except ImportError:
-            logging.error("watchfiles is not installed, cannot start with RELOAD_ON_SOURCE_CHANGES=True")
-            anyio.run(start_bot)
-    else:
-        anyio.run(start_bot)
-
-
-if __name__ == '__main__':
-    main()
+async def interrupt_handler(cancel_scope: CancelScope):
+    with open_signal_receiver(signal.SIGINT, signal.SIGTERM) as signals:
+        async for signum in signals:
+            logging.warning(f"Received signal {signum} from system.")
+            if signum == signal.SIGTERM or signum == signal.SIGINT:
+                # noinspection PyAsyncCall
+                cancel_scope.cancel()
+                break
