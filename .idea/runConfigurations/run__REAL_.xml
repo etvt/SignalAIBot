@@ -49,6 +49,13 @@
       </option>
     </EXTENSION>
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+    <PathMappingSettings>
+      <option name="pathMappings">
+        <list>
+          <mapping local-root="$PROJECT_DIR$/src" remote-root="/app/src" />
+        </list>
+      </option>
+    </PathMappingSettings>
     <option name="SCRIPT_NAME" value="signalaibot.main" />
     <option name="PARAMETERS" value="" />
     <option name="SHOW_COMMAND_LINE" value="false" />
