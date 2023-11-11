@@ -16,13 +16,15 @@ RUN apt-get update && \
 
 
 # ---------- set up signald ----------
-RUN mkdir /signald/data && chown -R signald:signald /signald/data
-VOLUME /signald/data
+RUN mkdir /persistent_data && mkdir /persistent_data/signald && chown -R signald:signald /persistent_data
+VOLUME /persistent_data
 
 
 # ---------- prepare the entrypoint and the command ----------
 ADD ./docker/entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
+ADD ./docker/run-as-signald-entrypoint.sh /usr/bin/run-as-signald-entrypoint.sh
+RUN chmod +x /usr/bin/run-as-signald-entrypoint.sh
 ADD ./docker/signalaibot.sh /usr/bin/signalaibot.sh
 RUN chmod +x /usr/bin/signalaibot.sh
 
@@ -48,9 +50,9 @@ RUN if [ "$DEVELOPMENT" = "true" ] ; then \
     fi
 
 
-# run-time user
-ARG RUN_AS=signald
+# default run-time user is root, to be able to chown mounted volumes, then we continue with signald user afterwards
+ARG RUN_AS=root
 USER ${RUN_AS}
 
-ENTRYPOINT ["/usr/bin/dumb-init", "--single-child", "--", "/usr/bin/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--single-child", "--", "/usr/bin/run-as-signald-entrypoint.sh"]
 CMD ["/usr/bin/signalaibot.sh"]

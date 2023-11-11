@@ -27,15 +27,18 @@ stop_process() {
 cleanup() {
     # Unregister the traps inside the cleanup to prevent recursive triggering
     trap - EXIT SIGINT SIGTERM
-
     echo "Exit requested. Cleaning up..."
+
     stop_process "$CMD_PID"
     CMD_PID=
-    echo "Sleeping for 2 seconds..."
-    sleep 2
+
+    echo "Sleeping for 1 second..."
+    sleep 1
+
     stop_process "$SIGNALD_PID"
     SIGNALD_PID=
-    echo "Cleanup complete. Exiting..."
+
+    echo "Cleanup complete."
 }
 
 # Call cleanup when the script exits or receives a signal
@@ -44,7 +47,7 @@ trap cleanup EXIT SIGINT SIGTERM
 
 # Start signald in the background
 pushd / >/dev/null
-signald -d /signald/data -s /signald/signald.sock &
+signald -d /persistent_data/signald -s /signald/signald.sock &
 SIGNALD_PID=$!
 echo "Started signald with PID $SIGNALD_PID"
 popd >/dev/null

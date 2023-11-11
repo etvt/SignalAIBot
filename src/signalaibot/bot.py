@@ -1,5 +1,4 @@
 import logging
-import os
 import random
 import signal
 import tempfile
@@ -10,6 +9,9 @@ import feedparser
 from anyio import open_signal_receiver, CancelScope
 from bs4 import BeautifulSoup
 from semaphore import Attachment, Bot, ChatContext
+
+from signalaibot.settings import state_manager
+from signalaibot.settings.config_manager import config
 
 
 async def ai(ctx: ChatContext) -> None:
@@ -47,17 +49,20 @@ async def apod(ctx: ChatContext) -> None:
 
 
 async def start_bot():
-    async with Bot(os.environ["SIGNAL_PHONE_NUMBER"],
-                   # profile_name="[botee]", profile_picture=str(Path.cwd() / "resources" / "avatar.jpg"),
-                   group_auto_accept=False,
-                   socket_path="/signald/signald.sock") as bot:
-        async with anyio.create_task_group() as tg:
-            tg.start_soon(interrupt_handler, tg.cancel_scope)
-            logging.info("Starting bot...")
-            bot.register_handler("!ai", ai)
-            bot.register_handler("!apod", apod)
+    try:
+        async with Bot(config.bot_username,
+                       # profile_name="[botee]", profile_picture=str(Path.cwd() / "resources" / "avatar.jpg"),
+                       group_auto_accept=False,
+                       socket_path="/signald/signald.sock") as bot:
+            async with anyio.create_task_group() as tg:
+                tg.start_soon(interrupt_handler, tg.cancel_scope)
+                logging.info("Registering handlers...")
+                bot.register_handler("!ai", ai)
+                bot.register_handler("!apod", apod)
 
-            await bot.start()
+                await bot.start()
+    finally:
+        state_manager.save_state()
 
 
 async def interrupt_handler(cancel_scope: CancelScope):

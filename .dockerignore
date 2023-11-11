@@ -1,4 +1,5 @@
 .dockerignore
+docker/volumes**
 Dockerfile*
 **/.git
 **/.gitignore

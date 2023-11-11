@@ -1,12 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="run [ephemeral]" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="run [REAL account]" type="PythonConfigurationType" factoryName="Python">
     <module name="SignalAIBot" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="false" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
-      <env name="SIGNAL_PHONE_NUMBER" value="+11111111" />
-      <env name="RELOAD_ON_SOURCE_CHANGES" value="true" />
+      <env name="RELOAD_ON_CODE_CHANGES" value="true" />
     </envs>
     <option name="SDK_HOME" value="" />
     <option name="WORKING_DIRECTORY" value="/app" />
@@ -37,6 +36,18 @@
             <option name="containerPath" value="/app/src" />
             <option name="editable" value="true" />
             <option name="hostPath" value="$PROJECT_DIR$/src" />
+            <option name="readOnly" value="false" />
+          </DockerVolumeBindingImpl>
+          <DockerVolumeBindingImpl>
+            <option name="containerPath" value="/persistent_data" />
+            <option name="editable" value="true" />
+            <option name="hostPath" value="$PROJECT_DIR$/docker/volumes/real_account/persistent_data" />
+            <option name="readOnly" value="false" />
+          </DockerVolumeBindingImpl>
+          <DockerVolumeBindingImpl>
+            <option name="containerPath" value="/secrets" />
+            <option name="editable" value="true" />
+            <option name="hostPath" value="$PROJECT_DIR$/docker/volumes/real_account/secrets" />
             <option name="readOnly" value="false" />
           </DockerVolumeBindingImpl>
         </list>

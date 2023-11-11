@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="exec into container for project" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
+  <configuration default="false" name="build + run [example account]" type="docker-deploy" factoryName="dockerfile" server-name="Docker">
     <deployment type="dockerfile">
       <settings>
         <option name="imageTag" value="etvt/signalaibot:local" />
@@ -13,16 +13,17 @@
           </list>
         </option>
         <option name="buildKitEnabled" value="true" />
-        <option name="command" value="-c &quot;cd /project; exec /bin/bash&quot;" />
-        <option name="containerName" value="signalaibot_exec" />
-        <option name="entrypoint" value="/bin/bash" />
-        <option name="commandLineOptions" value="--rm" />
+        <option name="containerName" value="signalaibot_local_example" />
         <option name="sourceFilePath" value="Dockerfile" />
         <option name="volumeBindings">
           <list>
             <DockerVolumeBindingImpl>
-              <option name="containerPath" value="/project" />
-              <option name="hostPath" value="$PROJECT_DIR$" />
+              <option name="containerPath" value="/secrets" />
+              <option name="hostPath" value="$PROJECT_DIR$/docker/volumes/example_account/secrets" />
+            </DockerVolumeBindingImpl>
+            <DockerVolumeBindingImpl>
+              <option name="containerPath" value="/persistent_data" />
+              <option name="hostPath" value="$PROJECT_DIR$/docker/volumes/example_account/persistent_data" />
             </DockerVolumeBindingImpl>
           </list>
         </option>

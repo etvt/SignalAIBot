@@ -1,3 +1,5 @@
 .idea/*
 !.idea/runConfigurations/
-local**
+local**/**
+**/volumes/**/real_account/**
+**/volumes/**/*_account/**/signald/**

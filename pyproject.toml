@@ -11,6 +11,8 @@ semaphore-bot = "^0.16.0"
 feedparser = "^6.0.10"
 asks = "^3.0.0"
 beautifulsoup4 = "^4.12.2"
+pyyaml = "^6.0.1"
+pydantic = "^2.4.2"
 
 [tool.poetry.group.dev]
 optional = true
