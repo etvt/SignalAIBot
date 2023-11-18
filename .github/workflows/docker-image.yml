@@ -30,6 +30,6 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/etvt/signalaibot:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
