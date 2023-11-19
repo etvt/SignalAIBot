@@ -23,7 +23,8 @@ def load_config():
             file_path = os.path.join(secrets_path, filename)
             if os.path.isfile(file_path) and os.path.getsize(file_path) <= constants.ONE_KB:
                 with open(file_path, 'r') as file:
-                    env_dict[filename] = file.read()
+                    config_name = filename.replace('.', '_').replace('-', '_')
+                    env_dict[config_name] = file.read()
 
     # env vars
     logging.info("Loading environment variables...")
