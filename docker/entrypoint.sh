@@ -4,6 +4,8 @@ set -euo pipefail
 
 SIGNALD_PID=
 CMD_PID=
+SLEEP_PID=
+EXIT_REQUESTED=
 
 # Function to stop a process gracefully
 stop_process() {
@@ -28,15 +30,24 @@ cleanup() {
     # Unregister the traps inside the cleanup to prevent recursive triggering
     trap - EXIT SIGINT SIGTERM
     echo "Exit requested. Cleaning up..."
+    EXIT_REQUESTED=true
 
+    echo "Stopping CMD..."
     stop_process "$CMD_PID"
     CMD_PID=
 
     echo "Sleeping for 1 second..."
     sleep 1
 
+    echo "Stopping signald..."
     stop_process "$SIGNALD_PID"
     SIGNALD_PID=
+
+    if [[ -n "$SLEEP_PID" ]]; then
+      echo "Stopping sleep on error..."
+      stop_process "$SLEEP_PID"
+      SLEEP_PID=
+    fi
 
     echo "Cleanup complete."
 }
@@ -73,6 +84,16 @@ if wait -n $SIGNALD_PID $CMD_PID; then
 else
   EXIT_CODE=$?
   echo "Received ERROR code '$EXIT_CODE' from one process. Exiting..."
+
+  if [ "$EXIT_REQUESTED" != true ] && [ -n "${SLEEP_ON_ERROR:-}" ]; then
+    sleep "$SLEEP_ON_ERROR" &
+    SLEEP_PID=$!
+    echo "Started sleeping on error (sleep " "$SLEEP_ON_ERROR" ") with PID $SLEEP_PID..."
+
+    wait -n $SLEEP_PID || true
+    echo "Sleep finished."
+    SLEEP_PID=
+  fi
 fi
 
 # Exit with the code from the process that terminated first
