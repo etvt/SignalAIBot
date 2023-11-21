@@ -25,11 +25,24 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker images
+      - name: Build and push Docker image - dynamic runtime switch from root to signald with volume permission management
         uses: docker/build-push-action@v5.1.0
         with:
           context: .
+          file: Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/etvt/signalaibot:latest
+          tags: ghcr.io/etvt/signalaibot.root:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Docker image - starting as signald right away, no dynamic volume permission management
+        uses: docker/build-push-action@v5.1.0
+        with:
+          context: .
+          file: Dockerfile
+          build-args: |
+            RUN_AS=signald
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/etvt/signalaibot.noroot:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
