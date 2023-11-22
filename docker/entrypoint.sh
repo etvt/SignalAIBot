@@ -58,9 +58,15 @@ trap cleanup EXIT SIGINT SIGTERM
 
 # Start signald in the background
 pushd / >/dev/null
-signald -d /persistent_data/signald -s /signald/signald.sock &
+
+if [ -z "${POSTGRES_URL:-}" ]; then  # no database is specified
+  signald -d /persistent_data/signald  -s /signald/signald.sock &
+else # db connection string is specified
+  signald -d /persistent_data/signald --database="$POSTGRES_URL" -s /signald/signald.sock &
+fi
 SIGNALD_PID=$!
 echo "Started signald with PID $SIGNALD_PID"
+
 popd >/dev/null
 
 echo "Waiting 5 seconds for signald to initialize..."
