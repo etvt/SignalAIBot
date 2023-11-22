@@ -62,7 +62,10 @@ pushd / >/dev/null
 if [ -z "${POSTGRES_URL:-}" ]; then  # no database is specified
   signald -d /persistent_data/signald  -s /signald/signald.sock &
 else # db connection string is specified
-  POSTGRES_URL=${POSTGRES_URL/postgres/postgresql}  # signald does not accept the 'postgres' URI scheme
+  if [[ $POSTGRES_URL != "postgresql"* ]]; then
+    # signald does not accept the 'postgres' URI scheme
+    POSTGRES_URL=${POSTGRES_URL/postgres/postgresql}
+  fi
   signald -d /persistent_data/signald --database="$POSTGRES_URL" -s /signald/signald.sock &
 fi
 SIGNALD_PID=$!
@@ -70,13 +73,36 @@ echo "Started signald with PID $SIGNALD_PID"
 
 popd >/dev/null
 
-echo "Waiting 5 seconds for signald to initialize..."
-sleep 5
 
-if ! ps -p $SIGNALD_PID > /dev/null 2>&1; then
-  echo "signald is not running. Exiting..."
-  exit 1
+echo "Waiting for signald socket to become available..."
+timeout=60  # 60 seconds timeout
+while [ $timeout -gt 0 ] && [ "$EXIT_REQUESTED" != true ]; do
+    if [ -S /signald/signald.sock ]; then
+        echo "signald socket is available."
+        break
+    fi
+
+    # Check if signald is still running
+    if ! kill -0 $SIGNALD_PID > /dev/null 2>&1; then
+        echo "signald process has exited."
+        break
+    fi
+
+    echo "Waiting for signald socket... $timeout seconds remaining"
+    sleep 1
+    ((timeout--))
+done
+
+if [ "$EXIT_REQUESTED" == true ]; then
+    echo "Exit requested during wait. Exiting..."
+    exit 1
 fi
+
+if [ ! -S /signald/signald.sock ] || ! kill -0 $SIGNALD_PID > /dev/null 2>&1; then
+    echo "Timeout reached waiting for socket or signald process is not running. Exiting..."
+    exit 1
+fi
+
 
 # Start the cmd in the background
 "$@" &
