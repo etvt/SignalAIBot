@@ -62,6 +62,7 @@ pushd / >/dev/null
 if [ -z "${POSTGRES_URL:-}" ]; then  # no database is specified
   signald -d /persistent_data/signald  -s /signald/signald.sock &
 else # db connection string is specified
+  POSTGRES_URL=${POSTGRES_URL/postgres/postgresql}  # signald does not accept the 'postgres' URI scheme
   signald -d /persistent_data/signald --database="$POSTGRES_URL" -s /signald/signald.sock &
 fi
 SIGNALD_PID=$!
